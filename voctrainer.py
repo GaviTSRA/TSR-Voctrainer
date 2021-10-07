@@ -6,7 +6,7 @@ import urllib
 import zipfile
 import shutil
 
-VERSION = 2
+VERSION = 3
 
 def get_categories():
     categories = []
@@ -144,17 +144,23 @@ def update():
 def generate_performance_file():
     performance_lines = {}
     for category in os.listdir("."):
-        if os.path.isdir(category):
+        if os.path.isdir(category) and not category == ".git":
             for sub_category in os.listdir(category):
-                performance_lines[sub_category] = "0\n"
-    open("performance.txt", "x", encoding="utf-8").close()
+                performance_lines[category + "/" + sub_category] = "0\n"
+    if not os.path.exists("performance.txt"):
+        open("performance.txt", "x", encoding="utf-8").close()
     with open("performance.txt", "r", encoding="utf-8") as fi:
         lines = fi.readlines()
         for line in lines:
             performance_lines[line.split("=")[0]] = line.split("=")[1]
-    with open("performance.txt", "a", encoding="utf-8") as fi:
+    with open("performance.txt", "w", encoding="utf-8") as fi:
         for line in performance_lines:
             fi.write(line + "=" + performance_lines[line])
+
+
+generate_performance_file()
+
+raise ValueError
 
 check_for_update()
 while True:
