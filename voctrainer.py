@@ -158,10 +158,6 @@ def generate_performance_file():
             fi.write(line + "=" + performance_lines[line])
 
 
-generate_performance_file()
-
-raise ValueError
-
 check_for_update()
 while True:
     category = choose_category()
