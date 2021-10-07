@@ -6,7 +6,7 @@ import urllib
 import zipfile
 import shutil
 
-VERSION = 1
+VERSION = 2
 
 def get_categories():
     categories = []
