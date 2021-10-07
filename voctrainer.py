@@ -2,6 +2,8 @@ from colorama import Fore
 import os
 import random
 
+VERSION = 0.1
+
 def get_categories():
     categories = []
     for current in os.listdir("."):
