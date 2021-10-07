@@ -2,7 +2,7 @@ from colorama import Fore
 import os
 import random
 import dns.resolver
-import urllib
+from urllib import request
 import zipfile
 import shutil
 
@@ -109,7 +109,7 @@ def update():
     print("Starting update")
 
     print("Downloading update...")
-    urllib.request.urlretrieve("https://github.com/GaviTSRA/TSR-Voctrainer/archive/refs/heads/master.zip", "update.zip")
+    request.urlretrieve("https://github.com/GaviTSRA/TSR-Voctrainer/archive/refs/heads/master.zip", "update.zip")
     print("Done")  
 
     print("Extracting...")
