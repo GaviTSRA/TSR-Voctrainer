@@ -1,13 +1,17 @@
 from colorama import Fore
 import os
 import random
+import dns.resolver
+import urllib
+import zipfile
+import shutil
 
-VERSION = 0.1
+VERSION = 1
 
 def get_categories():
     categories = []
     for current in os.listdir("."):
-        if os.path.isdir(current):
+        if os.path.isdir(current) and current != ".git":
              categories.append(current)
     return  categories
 
@@ -93,11 +97,66 @@ def choose_sub_category(category):
     return sub_category
 
 def check_for_update():
-    pass
+    answers = dns.resolver.resolve('voctrainerversion.tsrnetwork.ga', 'TXT')
+    newest_version = int(answers[0].strings[0])
+    if newest_version > VERSION:
+        print("An update was found, starting update")
+        update()
+    else:
+        print("No updates found")
 
 def update():
-    pass
+    print("Starting update")
 
+    print("Downloading update...")
+    urllib.request.urlretrieve("https://github.com/GaviTSRA/TSR-Voctrainer/archive/refs/heads/master.zip", "update.zip")
+    print("Done")  
+
+    print("Extracting...")
+    with zipfile.ZipFile("update.zip", 'r') as zip_ref:
+        zip_ref.extractall("update")
+    print("Done")
+
+    print("Removing old files...")
+    for folder in os.listdir(os.path.curdir):
+        if os.path.isdir(folder) and folder != "update":
+            shutil.rmtree(folder)
+    os.remove("voctrainer.py")
+    print("Done")
+
+    print("Copying new files...")
+    for file in os.listdir("update\\TSR-Voctrainer-master"):
+        if not file == ".gitignore":
+            shutil.move("update\\TSR-Voctrainer-master\\" + file, os.path.curdir)
+    print("Done")
+
+    print("Cleaning up...")
+    shutil.rmtree("update")
+    os.remove("update.zip")
+    print("Done")
+
+    print("Generating performance file")
+    generate_performance_file()
+    print("Done")
+
+    print("Update completed")
+    
+def generate_performance_file():
+    performance_lines = {}
+    for category in os.listdir("."):
+        if os.path.isdir(category):
+            for sub_category in os.listdir(category):
+                performance_lines[sub_category] = "0\n"
+    open("performance.txt", "x", encoding="utf-8").close()
+    with open("performance.txt", "r", encoding="utf-8") as fi:
+        lines = fi.readlines()
+        for line in lines:
+            performance_lines[line.split("=")[0]] = line.split("=")[1]
+    with open("performance.txt", "a", encoding="utf-8") as fi:
+        for line in performance_lines:
+            fi.write(line + "=" + performance_lines[line])
+
+check_for_update()
 while True:
     category = choose_category()
     sub_category = choose_sub_category(category)
